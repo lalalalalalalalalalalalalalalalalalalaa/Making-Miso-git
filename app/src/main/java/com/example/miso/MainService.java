@@ -84,14 +84,18 @@ public class MainService extends Service {
             notificationManager.notify(0, notify);
             editor.putInt("notify", 1);
             editor.apply();
-        }else if ((days <= 180) && (days % 30 == 0) && (openorclose == 1)) {
-            notificationManager.notify(0, notify);
-            editor.putInt("notify", 0);
-            editor.apply();
-        } else if ( days % 180 == 0 && openorclose == 1) {
-            notificationManager.notify(0, notify);
-            editor.putInt("notify", 0);
-            editor.apply();
+        }else if ( (days <= 180) && (days % 30 == 0) ) {
+            if (openorclose == 1) {
+                notificationManager.notify(0, notify);
+                editor.putInt("notify", 0);
+                editor.apply();
+            }
+        } else if ( days % 180 == 0 ) {
+            if(openorclose == 1) {
+                notificationManager.notify(0, notify);
+                editor.putInt("notify", 0);
+                editor.apply();
+            }
         }else {
             notificationManager.cancel(0);
             editor.putInt("notify", 1);
