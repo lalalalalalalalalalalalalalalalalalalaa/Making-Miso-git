@@ -91,10 +91,10 @@ public class MainService extends Service {
                 editor.apply();
             }
         } else if ( days % 180 == 0 ) {
-            if(openorclose == 1) {
-                notificationManager.notify(0, notify);
-                editor.putInt("notify", 0);
-                editor.apply();
+            if(openorclose == 1){
+            notificationManager.notify(0, notify);
+            editor.putInt("notify", 0);
+            editor.apply();
             }
         }else {
             notificationManager.cancel(0);
