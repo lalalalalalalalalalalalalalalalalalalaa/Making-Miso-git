@@ -136,6 +136,8 @@ public class MainActivity extends AppCompatActivity {
         }catch (Exception e){
 
         }
+
+
         db.close();
     }
     //設定主選單按鍵傾聽
@@ -177,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
 
     }
+
     //取得相機使用權限
     private void askCameraPermissions() {
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){

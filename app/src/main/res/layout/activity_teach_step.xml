@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:background="@color/miso"
-    android:layout_height="660dp"
+    android:layout_height="match_parent"
     tools:context=".teach_step">
 
     <TextView

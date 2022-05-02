@@ -20,6 +20,7 @@ public class main extends Fragment {
 
     public main() {}
 
+
     View view;
     SQLiteDatabase db;
     TextView countday;

@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -54,7 +55,7 @@ public class MainService extends Service {
                 }
         }
 
-        Notification.Builder builder =new Notification.Builder(MainService.this);
+        Notification.Builder builder = new Notification.Builder(MainService.this);
         notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         Intent push =new Intent(MainService.this,MainService.class);
         PendingIntent contentIntent = PendingIntent.getActivity(MainService.this,0,push,flags);
@@ -73,7 +74,6 @@ public class MainService extends Service {
                 .setAutoCancel(true);
         Notification notify = builder.build();
 
-
         //設定開關，0是關閉，1是開啟
 
         SharedPreferences preferences = getSharedPreferences("notify", Context.MODE_PRIVATE);
@@ -91,7 +91,7 @@ public class MainService extends Service {
                 editor.apply();
             }
         } else if ( days % 180 == 0 ) {
-            if(openorclose == 1){
+            if (openorclose == 1) {
             notificationManager.notify(0, notify);
             editor.putInt("notify", 0);
             editor.apply();
@@ -101,9 +101,20 @@ public class MainService extends Service {
             editor.putInt("notify", 1);
             editor.apply();
         }
-
         cursor.close();
         db.close();
+
+    }
+
+    @Nullable
+    @Override
+    public ComponentName startService(Intent service) {
+        return super.startService(service);
+    }
+
+    @Override
+    public boolean stopService(Intent name) {
+        return super.stopService(name);
     }
 
     private long findTime(String a){
@@ -126,5 +137,6 @@ public class MainService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
     }
 }
