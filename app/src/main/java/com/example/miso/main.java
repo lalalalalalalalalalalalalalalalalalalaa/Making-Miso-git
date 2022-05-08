@@ -2,8 +2,10 @@ package com.example.miso;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -84,6 +86,12 @@ public class main extends Fragment {
                 countday.setText(getString(R.string.before_start));
                 cancel_alarm(getContext(),cal);
 
+                ComponentName receiver = new ComponentName(getContext(), MyReceiver.class);
+                PackageManager pm = getContext().getPackageManager();
+                pm.setComponentEnabledSetting(receiver,
+                        PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                        PackageManager.DONT_KILL_APP);
+
             }
         });
         //設定開始，並將當下時間記錄到資料庫，並且開啟伺服器
@@ -100,13 +108,16 @@ public class main extends Fragment {
                 start.setVisibility(View.INVISIBLE);
                 complete.setVisibility(View.VISIBLE);
                 countday.setText(getString(R.string.btn_starting));
-                //下一分鐘0秒時
 
                 cal.add(Calendar.MONTH, 1);    //加一個月
                 cal.set(Calendar.SECOND, 0);    //設定秒數為0
                 add_alarm(getContext(), cal);        //註冊鬧鐘
-                //在MainActivity中 context = this
-                //在service中      context = context(service的)
+
+                ComponentName receiver = new ComponentName(getContext(), MyReceiver.class);
+                PackageManager pm = getContext().getPackageManager();
+                pm.setComponentEnabledSetting(receiver,
+                        PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                        PackageManager.DONT_KILL_APP);
 
             }
         });
@@ -147,6 +158,7 @@ public class main extends Fragment {
         intent.putExtra("time", AlarmTimeTag);
 
         PendingIntent pi = PendingIntent.getBroadcast(context, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
 
         android.app.AlarmManager am = (android.app.AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         am.set(android.app.AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pi);       //註冊鬧鐘

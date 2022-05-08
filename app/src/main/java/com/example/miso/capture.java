@@ -2,6 +2,7 @@ package com.example.miso;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,8 @@ import android.widget.ImageView;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.util.ArrayList;
 
 public class capture extends Fragment {
 
@@ -33,6 +36,7 @@ public class capture extends Fragment {
                 sendIntent.setAction(Intent.ACTION_SEND);
                 sendIntent.putExtra(Intent.EXTRA_STREAM, image);
                 sendIntent.setType("image/*");
+                //startActivity(Intent.createChooser(sendIntent, getResources().getText(R.id.send_to)));
                 Intent shareIntent = Intent.createChooser(sendIntent, null);
                 startActivity(Intent.createChooser(shareIntent, "Share image to"));
             }
@@ -41,4 +45,20 @@ public class capture extends Fragment {
 
         return  view;
     }
+/*
+    public void takePhotoNoCompress(View view) {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+
+            String filename = new SimpleDateFormat("yyyyMMdd-HHmmss", Locale.CHINA)
+                    .format(new Date()) + ".png";
+            File file = new File(Environment.getExternalStorageDirectory(), filename);
+            mCurrentPhotoPath = file.getAbsolutePath();
+
+            // 核心就是这一行代码
+            Uri fileUri = FileProvider.getUriForFile(this, "com.siyee.android7.fileprovider", file);
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+            startActivityForResult(takePictureIntent, REQUEST_CODE_TAKE_PHOTO);
+        }
+    }*/
 }
