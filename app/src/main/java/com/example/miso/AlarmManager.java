@@ -3,46 +3,31 @@ package com.example.miso;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Service;
-import android.content.ComponentName;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.IBinder;
-import android.os.PowerManager;
-
-import androidx.annotation.Nullable;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class MainService extends Service {
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-
-        return null;
-    }
+public class AlarmManager extends BroadcastReceiver {
 
     SQLiteDatabase db;
-
-    private PowerManager.WakeLock wakeLock;
     NotificationManager notificationManager;
-
     final int flags = PendingIntent.FLAG_CANCEL_CURRENT;
 
     @Override
-    public void onCreate() {
-        super.onCreate();
-        PowerManager powerManager = (PowerManager)
-                getSystemService(Context.POWER_SERVICE);
-        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "myapp:wakelock");
-        wakeLock.acquire();
+    public void onReceive(Context context, Intent intent) {
 
-        db = openOrCreateDatabase("Miso.db", Context.MODE_PRIVATE, null);
+        SharedPreferences preferences = context.getSharedPreferences("times", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        int count = preferences.getInt("Language", 0);
+
+        db = context.openOrCreateDatabase("Miso.db", Context.MODE_PRIVATE, null);
         Cursor cursor = db.rawQuery("SELECT _id, date FROM Date", null);
 
         String gettime = "";
@@ -52,16 +37,16 @@ public class MainService extends Service {
             while (cursor.moveToNext()) {
                 gettime = cursor.getString(1);
                 days = (int)findTime(gettime);
-                }
+            }
         }
 
-        Notification.Builder builder = new Notification.Builder(MainService.this);
-        notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-        Intent push =new Intent(MainService.this,MainService.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(MainService.this,0,push,flags);
+        Notification.Builder builder = new Notification.Builder(context);
+        notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        Intent push =new Intent(context,MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(context,0,push,flags);
         builder
-                .setContentTitle(getString(R.string.notify_ttitle))
-                .setContentText(getString(R.string.notify_1_content) + days + getString(R.string.notify_2_content))
+                .setContentTitle(context.getString(R.string.notify_ttitle))
+                .setContentText(context.getString(R.string.notify_1_content) + days + context.getString(R.string.notify_2_content))
                 .setContentIntent(contentIntent)
                 .setTicker("新訊息")
                 //.setLargeIcon(BitmapFactory.decodeResource(getResources(),R.drawable.ic_launcher_foreground))
@@ -72,50 +57,21 @@ public class MainService extends Service {
                 .setSmallIcon(R.drawable.home)
                 .setFullScreenIntent(contentIntent, true)//將Notification變為懸掛式Notification
                 .setAutoCancel(true);
+
         Notification notify = builder.build();
 
-        //設定開關，0是關閉，1是開啟
-
-        SharedPreferences preferences = getSharedPreferences("notify", Context.MODE_PRIVATE);
-        int openorclose = preferences.getInt("notify", 0);
-        SharedPreferences.Editor editor = preferences.edit();
-
-        if (days == 0) {
+        if(count <= 6) {
+            count += 1;
+            editor.putInt("times", count);
             notificationManager.notify(0, notify);
-            editor.putInt("notify", 1);
-            editor.apply();
-        }else if ( (days <= 180) && (days % 30 == 0) ) {
-            if (openorclose == 1) {
-                notificationManager.notify(0, notify);
-                editor.putInt("notify", 0);
-                editor.apply();
-            }
-        } else if ( days % 180 == 0 ) {
-            if (openorclose == 1) {
+        }else if(count > 6 && count%6 == 0) {
             notificationManager.notify(0, notify);
-            editor.putInt("notify", 0);
-            editor.apply();
-            }
-        }else {
-            notificationManager.cancel(0);
-            editor.putInt("notify", 1);
-            editor.apply();
         }
         cursor.close();
         db.close();
 
     }
 
-    @Nullable
-    @Override
-    public ComponentName startService(Intent service) {
-        return super.startService(service);
-    }
-
-    @Override
-    public boolean stopService(Intent name) {
-        return super.stopService(name);
-    }
 
     private long findTime(String a){
         long temp = 0;
@@ -134,9 +90,6 @@ public class MainService extends Service {
         return temp;
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
 
-    }
+
 }
