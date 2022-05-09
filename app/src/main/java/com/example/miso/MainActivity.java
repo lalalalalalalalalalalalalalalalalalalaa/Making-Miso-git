@@ -29,6 +29,8 @@ import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -175,7 +177,8 @@ public class MainActivity extends AppCompatActivity {
             }
             else if (id == R.id.photo) {
                 setting.setVisibility(View.INVISIBLE);
-                askCameraPermissions();
+                //askCameraPermissions();
+                replaceFragment(new capture());
                 return true;
             }
             return false;
@@ -191,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    //取得相機使用權限
+    /*//取得相機使用權限
     private void askCameraPermissions() {
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.CAMERA}, CAMERA_PERM_CODE);
@@ -222,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
             mCurrentPhotoPath = file.getAbsolutePath();
 
             // 核心就是这一行代码
-            Uri fileUri = FileProvider.getUriForFile(this, "com.example.miso.file_path", file);
+            Uri fileUri = FileProvider.getUriForFile(this, "com.siyee.android7.fileprovider", file);
 
             List<ResolveInfo> resInfoList = getPackageManager()
                     .queryIntentActivities(takePictureIntent, PackageManager.MATCH_DEFAULT_ONLY);
@@ -235,14 +238,15 @@ public class MainActivity extends AppCompatActivity {
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
             startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
         }
-        //startActivityForResult(camera, CAMERA_REQUEST_CODE);
+        //startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == CAMERA_REQUEST_CODE){
             try {
-                Bitmap image = BitmapFactory.decodeFile(mCurrentPhotoPath);
+                Uri uri = data.getData(MediaStore.EXTRA_OUTPUT);
+                Bitmap image = (Bitmap)data.getExtras().get("data");
                 Bundle sentimage = new Bundle();
                 sentimage.putParcelable("sentimage", image);
                 capture capture = new capture();
@@ -251,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
             }catch (Exception e){
             }
         }
-    }
+    }*/
 
     //切換語言的方法
     private void setLanguage() {
