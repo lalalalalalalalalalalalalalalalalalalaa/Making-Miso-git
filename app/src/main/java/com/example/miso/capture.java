@@ -1,13 +1,17 @@
 package com.example.miso;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -39,7 +43,6 @@ public class capture extends Fragment {
 
     View view;
     ImageView cameraView;
-    Bitmap image;
     Uri fileUri = null;
 
     public static final int CAMERA_PERM_CODE = 101;
@@ -47,14 +50,16 @@ public class capture extends Fragment {
     private String mCurrentPhotoPath;
 
     @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        askCameraPermissions();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        view = inflater.inflate(R.layout.activity_capture, container,  false );
+        view = inflater.inflate(R.layout.activity_capture, container, false);
         cameraView = view.findViewById(R.id.cameraView);
-        //image = getArguments().getParcelable("sentimage");
-       // cameraView.setImageBitmap(image);
-        askCameraPermissions();
-
 
         //設定分享按鈕
         FloatingActionButton btn_capture = view.findViewById(R.id.btn_capture);
@@ -63,27 +68,39 @@ public class capture extends Fragment {
             public void onClick(View view) {
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_STREAM, mCurrentPhotoPath);
+                sendIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
                 sendIntent.setType("image/*");
                 //startActivity(Intent.createChooser(sendIntent, getResources().getText(R.id.send_to)));
                 Intent shareIntent = Intent.createChooser(sendIntent, null);
                 startActivity(Intent.createChooser(shareIntent, "Share image to"));
             }
         });
-        //TODO:要在實機上測試能否分享圖片
 
-        return  view;
+        return view;
     }
+
 
     //取得相機使用權限
     private void askCameraPermissions() {
-        if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(getActivity(),new String[] {Manifest.permission.CAMERA}, CAMERA_PERM_CODE);
-        }else {
+        String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA};
+
+        if(ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
+                permissions[0]) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
+                permissions[1]) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
+                permissions[2]) == PackageManager.PERMISSION_GRANTED){
             openCamera();
+        }else{
+            ActivityCompat.requestPermissions(getActivity(),
+                    permissions,
+                    CAMERA_PERM_CODE);
         }
 
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -91,6 +108,7 @@ public class capture extends Fragment {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 openCamera();
             } else {
+                Toast.makeText(getContext(), "Camera Permission is Required to Use camera.", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -125,32 +143,17 @@ public class capture extends Fragment {
         }
         //startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == CAMERA_REQUEST_CODE){
-            cameraView.setImageBitmap(BitmapFactory.decodeFile(mCurrentPhotoPath));
-            /*try {
-                cameraView.setImageBitmap(BitmapFactory.decodeFile(mCurrentPhotoPath));
-                Toast.makeText(getContext(), "四", Toast.LENGTH_SHORT).show();
-            }catch (Exception e){
-            }*/
+        if (requestCode == CAMERA_REQUEST_CODE) {
+
+            cameraView.setImageURI(fileUri);
+
         }
     }
-/*
-    public void takePhotoNoCompress(View view) {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
 
-            String filename = new SimpleDateFormat("yyyyMMdd-HHmmss", Locale.CHINA)
-                    .format(new Date()) + ".png";
-            File file = new File(Environment.getExternalStorageDirectory(), filename);
-            mCurrentPhotoPath = file.getAbsolutePath();
 
-            // 核心就是这一行代码
-            Uri fileUri = FileProvider.getUriForFile(this, "com.siyee.android7.fileprovider", file);
-            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-            startActivityForResult(takePictureIntent, REQUEST_CODE_TAKE_PHOTO);
-        }
-    }*/
 }
+

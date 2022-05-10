@@ -78,6 +78,9 @@ public class main extends Fragment {
             @Override
             public void onClick(View view) {
                 //TODO:建立確認
+
+
+
                 String restart = "1999/12/31";
                 String str = "UPDATE Date SET date='" + restart + "' WHERE _id=" + 1;
                 db.execSQL(str);

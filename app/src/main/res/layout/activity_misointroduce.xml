@@ -7,7 +7,6 @@
     android:background="@color/miso"
     tools:context=".misointroduce">
 
-    <!-- TODO:要把開頭的字改大寫-->
 
     <TextView
         android:id="@+id/textView20"
