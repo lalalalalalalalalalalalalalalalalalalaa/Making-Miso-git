@@ -13,29 +13,17 @@ public class teach extends Fragment {
 
     View view;
 
+    Button button01, button02, button03, button04, button05, button06, button07, button08, btn_teach_introduce;
+    String step1, step2, step3, step4, step5, step6, step7, step8;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.activity_teach, container,  false);
 
-        Button button01 = view.findViewById(R.id.step1);
-        Button button02 = view.findViewById(R.id.step2);
-        Button button03 = view.findViewById(R.id.step3);
-        Button button04 = view.findViewById(R.id.step4);
-        Button button05 = view.findViewById(R.id.step5);
-        Button button06 = view.findViewById(R.id.step6);
-        Button button07 = view.findViewById(R.id.step7);
-        Button button08 = view.findViewById(R.id.step8);
-        Button btn_teach_introduce = view.findViewById(R.id.btn_teach_introduce);
+        findviewby();
+        getstr();
 
-        String step1 = getString(R.string.step1_content);
-        String step2 = getString(R.string.step2_content);
-        String step3 = getString(R.string.step3_content);
-        String step4 = getString(R.string.step4_content);
-        String step5 = getString(R.string.step5_content);
-        String step6 = getString(R.string.step6_content);
-        String step7 = getString(R.string.step7_content);
-        String step8 = getString(R.string.step8_content);
         //設定味增介紹的切換按鍵
         btn_teach_introduce.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -154,5 +142,27 @@ public class teach extends Fragment {
 
     }
 
+    private void findviewby(){
+        button01 = view.findViewById(R.id.step1);
+        button02 = view.findViewById(R.id.step2);
+        button03 = view.findViewById(R.id.step3);
+        button04 = view.findViewById(R.id.step4);
+        button05 = view.findViewById(R.id.step5);
+        button06 = view.findViewById(R.id.step6);
+        button07 = view.findViewById(R.id.step7);
+        button08 = view.findViewById(R.id.step8);
+        btn_teach_introduce = view.findViewById(R.id.btn_teach_introduce);
+    }
+
+    private void getstr() {
+        step1 = getString(R.string.step1_content);
+        step2 = getString(R.string.step2_content);
+        step3 = getString(R.string.step3_content);
+        step4 = getString(R.string.step4_content);
+        step5 = getString(R.string.step5_content);
+        step6 = getString(R.string.step6_content);
+        step7 = getString(R.string.step7_content);
+        step8 = getString(R.string.step8_content);
+    }
 
 }

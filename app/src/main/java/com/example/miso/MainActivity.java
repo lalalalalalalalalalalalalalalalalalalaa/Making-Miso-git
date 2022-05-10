@@ -49,9 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private Button setting;
     private Dialog dlg_settings;
 
-    public static final int CAMERA_PERM_CODE = 101;
-    public static final int CAMERA_REQUEST_CODE = 102;
-    private String mCurrentPhotoPath;
+    Button dlg_btn_back, dlg_btn_twch, dlg_btn_chch, dlg_btn_eng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,29 +59,24 @@ public class MainActivity extends AppCompatActivity {
         replaceFragment(new main());
         //更新為上次設定的語言
         setLanguage();
+        initdb();
 
         navigation = findViewById(R.id.navigation);
+        setting = findViewById(R.id.setting);
+
         navigation.getMenu().clear();
         navigation.inflateMenu(R.menu.menu_resource);
         navigation.setOnItemSelectedListener(navigationListener);
 
-        setting = findViewById(R.id.setting);
+
         setting.setText(R.string.setting);
         //設定"設定鍵"的傾聽
         setting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //設定Dialog，讀取自訂的設定畫面、設定畫面的按鍵
-                dlg_settings = new Dialog(MainActivity.this);
-                dlg_settings.setCancelable(false);
-                dlg_settings.setContentView(R.layout.setting);
-                dlg_settings.setTitle(getString(R.string.setting));
-                dlg_settings.show();
-
-                Button dlg_btn_back = dlg_settings.findViewById(R.id.dlg_btn_back);
-                Button dlg_btn_twch = dlg_settings.findViewById(R.id.dlg_btn_twch);
-                Button dlg_btn_chch = dlg_settings.findViewById(R.id.dlg_btn_chch);
-                Button dlg_btn_eng = dlg_settings.findViewById(R.id.dlg_btn_eng);
+                dlg_set();
+                dlg_btn_findviewby();
 
                 dlg_btn_back.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -135,23 +128,7 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
-        //資料庫建立、資料表建立
-        db = openOrCreateDatabase(DB_FILE, MODE_PRIVATE, null);
-        try {
-            db.execSQL(" CREATE TABLE " + DB_TABLE +
-                    "(_id INTEGER PRIMARY KEY," + "FormulaName TEXT NOT NULL," + "Ingredient TEXT," + "Content TEXT);");
-            db.execSQL(" CREATE TABLE " + DB_TABLE2 + "(_id INTEGER PRIMARY KEY," + "date TEXT NOT NULL);");
-            for ( int k =0; k < 8; k++) {
 
-                db.execSQL("INSERT INTO Formula (FormulaName ,Ingredient, Content) values ('請輸入配方名稱', '請輸入材料', '請輸入做法')");
-            }
-            db.execSQL("INSERT INTO Date (date) values ('1999/12/31')");
-        }catch (Exception e){
-
-        }
-
-
-        db.close();
     }
     //設定主選單按鍵傾聽
     private NavigationBarView.OnItemSelectedListener navigationListener = new NavigationBarView.OnItemSelectedListener() {
@@ -194,68 +171,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    /*//取得相機使用權限
-    private void askCameraPermissions() {
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.CAMERA}, CAMERA_PERM_CODE);
-        }else {
-            openCamera();
-        }
-
-    }
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == CAMERA_PERM_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openCamera();
-            } else {
-            }
-        }
+    private void dlg_set(){
+        dlg_settings = new Dialog(MainActivity.this);
+        dlg_settings.setCancelable(false);
+        dlg_settings.setContentView(R.layout.setting);
+        dlg_settings.setTitle(getString(R.string.setting));
+        dlg_settings.show();
     }
 
-    private void openCamera() {
-
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-
-            String filename = new SimpleDateFormat("yyyyMMdd-HHmmss", Locale.CHINA)
-                    .format(new Date()) + ".png";
-            File file = new File(Environment.getExternalStorageDirectory(), filename);
-            mCurrentPhotoPath = file.getAbsolutePath();
-
-            // 核心就是这一行代码
-            Uri fileUri = FileProvider.getUriForFile(this, "com.siyee.android7.fileprovider", file);
-
-            List<ResolveInfo> resInfoList = getPackageManager()
-                    .queryIntentActivities(takePictureIntent, PackageManager.MATCH_DEFAULT_ONLY);
-            for (ResolveInfo resolveInfo : resInfoList) {
-                String packageName = resolveInfo.activityInfo.packageName;
-                grantUriPermission(packageName, fileUri, Intent.FLAG_GRANT_READ_URI_PERMISSION
-                        | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            }
-
-            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-            startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
-        }
-        //startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
+    private void dlg_btn_findviewby(){
+        dlg_btn_back = dlg_settings.findViewById(R.id.dlg_btn_back);
+        dlg_btn_twch = dlg_settings.findViewById(R.id.dlg_btn_twch);
+        dlg_btn_chch = dlg_settings.findViewById(R.id.dlg_btn_chch);
+        dlg_btn_eng = dlg_settings.findViewById(R.id.dlg_btn_eng);
     }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == CAMERA_REQUEST_CODE){
-            try {
-                Uri uri = data.getData(MediaStore.EXTRA_OUTPUT);
-                Bitmap image = (Bitmap)data.getExtras().get("data");
-                Bundle sentimage = new Bundle();
-                sentimage.putParcelable("sentimage", image);
-                capture capture = new capture();
-                capture.setArguments(sentimage);
-                replaceFragment(capture);
-            }catch (Exception e){
-            }
-        }
-    }*/
 
     //切換語言的方法
     private void setLanguage() {
@@ -280,6 +209,25 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         resources.updateConfiguration(configuration,displayMetrics);
+    }
+
+    private void initdb(){
+        //資料庫建立、資料表建立
+        db = openOrCreateDatabase(DB_FILE, MODE_PRIVATE, null);
+        try {
+            db.execSQL(" CREATE TABLE " + DB_TABLE +
+                    "(_id INTEGER PRIMARY KEY," + "FormulaName TEXT NOT NULL," + "Ingredient TEXT," + "Content TEXT);");
+            db.execSQL(" CREATE TABLE " + DB_TABLE2 + "(_id INTEGER PRIMARY KEY," + "date TEXT NOT NULL);");
+            for ( int k =0; k < 8; k++) {
+
+                db.execSQL("INSERT INTO Formula (FormulaName ,Ingredient, Content) values ('請輸入配方名稱', '請輸入材料', '請輸入做法')");
+            }
+            db.execSQL("INSERT INTO Date (date) values ('1999/12/31')");
+        }catch (Exception e){
+
+        }
+
+        db.close();
     }
 
 

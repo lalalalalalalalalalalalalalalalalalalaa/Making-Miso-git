@@ -78,9 +78,9 @@ public class AlarmManager extends BroadcastReceiver {
         try{
             SimpleDateFormat sim = new SimpleDateFormat("yyyy/MM/dd");//定義日期時間格式，一定要進行ParseException的例外處理
             Date f = sim.parse(a);
-            long firstmeet = f.getTime();//取得時間的unix時間
-            Date now = new Date();//取得目前即時的時間
-            long nowtime = now.getTime();//取得時間的unix時間
+            long firstmeet = f.getTime();
+            Date now = new Date();
+            long nowtime = now.getTime();
             temp = (nowtime-firstmeet)/(1000*60*60*24);
             //Toast.makeText(getContext(), "time= " + f, Toast.LENGTH_SHORT).show();
         }catch(ParseException e){

@@ -29,6 +29,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -80,7 +82,7 @@ public class capture extends Fragment {
     }
 
 
-    //取得相機使用權限
+    //取得相機使用權限以及儲存空間權限
     private void askCameraPermissions() {
         String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -141,7 +143,6 @@ public class capture extends Fragment {
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
             startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
         }
-        //startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
     }
 
     @Override
@@ -151,7 +152,18 @@ public class capture extends Fragment {
 
             cameraView.setImageURI(fileUri);
 
+        }else {
+
         }
+    }
+
+    private void replaceFragment(Fragment fragment) {
+
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.mainpart,fragment);
+        fragmentTransaction.commit();
+
     }
 
 
