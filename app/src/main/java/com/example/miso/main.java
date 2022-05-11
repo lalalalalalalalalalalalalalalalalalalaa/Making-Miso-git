@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -94,6 +95,10 @@ public class main extends Fragment {
                 pm.setComponentEnabledSetting(receiver,
                         PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                         PackageManager.DONT_KILL_APP);
+
+                SharedPreferences preferences = getContext().getSharedPreferences("times", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putInt("times", 0);
 
             }
         });

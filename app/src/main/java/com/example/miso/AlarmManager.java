@@ -25,7 +25,7 @@ public class AlarmManager extends BroadcastReceiver {
 
         SharedPreferences preferences = context.getSharedPreferences("times", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        int count = preferences.getInt("Language", 0);
+        int count = preferences.getInt("times", 0);
 
         db = context.openOrCreateDatabase("Miso.db", Context.MODE_PRIVATE, null);
         Cursor cursor = db.rawQuery("SELECT _id, date FROM Date", null);
