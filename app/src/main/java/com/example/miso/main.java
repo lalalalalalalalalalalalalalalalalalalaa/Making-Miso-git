@@ -96,9 +96,7 @@ public class main extends Fragment {
                         PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                         PackageManager.DONT_KILL_APP);
 
-                SharedPreferences preferences = getContext().getSharedPreferences("times", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putInt("times", 0);
+
 
             }
         });
@@ -117,6 +115,10 @@ public class main extends Fragment {
                 complete.setVisibility(View.VISIBLE);
                 countday.setText(getString(R.string.btn_starting));
 
+                SharedPreferences preferences = getContext().getSharedPreferences("times", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putInt("times", 0);
+
                 cal.add(Calendar.MONTH, 1);    //加一個月
                 cal.set(Calendar.SECOND, 0);    //設定秒數為0
                 add_alarm(getContext(), cal);        //註冊鬧鐘
@@ -126,6 +128,7 @@ public class main extends Fragment {
                 pm.setComponentEnabledSetting(receiver,
                         PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                         PackageManager.DONT_KILL_APP);
+
 
             }
         });

@@ -62,7 +62,6 @@ public class AlarmManager extends BroadcastReceiver {
 
         count += 1;
         editor.putInt("times", count);
-
         if(count <= 6) {
             notificationManager.notify(0, notify);
         }else if(count > 6 && count%6 == 0) {
